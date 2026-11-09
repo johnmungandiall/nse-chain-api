@@ -19,6 +19,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -95,7 +96,12 @@ def _fetch_payload(symbol, typ, expiry):
         dates = info.get("expiryDates") or []
         if not dates:
             raise HTTPException(status_code=502, detail="No expiries returned by NSE")
-        expiry = dates[0]
+        now = datetime.now(timezone(timedelta(hours=5, minutes=30)))
+        live = [d for d in dates
+                if (parse_ist(d) or now).replace(hour=EXPIRY_SETTLE_HOUR,
+                                                 minute=EXPIRY_SETTLE_MINUTE,
+                                                 second=0, microsecond=0) > now]
+        expiry = (live or dates)[0]
 
     data = _http_json(f"{BASE}/api/option-chain-v3?type={typ}&symbol={symbol}&expiry={expiry}")
     records = data.get("records") or {}
@@ -124,7 +130,14 @@ def _fetch_payload(symbol, typ, expiry):
             "pe": _slim(r.get("PE")),
         })
 
-    fill_ivs(out_records, S)
+    def _iv_proxy(side):
+        vals = [sd["iv"] for rec in out_records for sd in [rec.get(side)]
+                if sd and sd.get("iv") is not None
+                and abs(rec["strike_price"] - S) <= 500]
+        return (sum(vals) / len(vals)) if vals else None
+
+    fill_ivs(out_records, S,
+             fallback={"ce": _iv_proxy("ce"), "pe": _iv_proxy("pe")})
 
     for rec in out_records:
         for side, is_put in (("ce", False), ("pe", True)):
@@ -161,12 +174,31 @@ def api_expiries(symbol: str = "NIFTY"):
         info = _http_json(f"{BASE}/api/option-chain-contract-info?symbol={symbol}")
     except Exception as e:
         raise HTTPException(status_code=502, detail=str(e)) from e
-    return {"symbol": symbol, "expiries": info.get("expiryDates", [])}
+    dates = info.get("expiryDates", [])
+    now = datetime.now(timezone(timedelta(hours=5, minutes=30)))
+    live = [d for d in dates
+            if (parse_ist(d) or now).replace(hour=EXPIRY_SETTLE_HOUR,
+                                             minute=EXPIRY_SETTLE_MINUTE,
+                                             second=0, microsecond=0) > now]
+    return {"symbol": symbol,
+            "expiries": live,
+            "skipped_settled": [d for d in dates if d not in live]}
 
 
 @app.get("/api/option-chain")
 def api_option_chain(symbol: str = "NIFTY", type: str = "Indices",
                      expiry: str | None = None):
+    if expiry:
+        exp_dt = parse_ist(expiry)
+        now = datetime.now(timezone(timedelta(hours=5, minutes=30)))
+        if exp_dt and exp_dt.replace(hour=EXPIRY_SETTLE_HOUR,
+                                     minute=EXPIRY_SETTLE_MINUTE,
+                                     second=0, microsecond=0) <= now:
+            raise HTTPException(
+                status_code=422,
+                detail=f"Expiry {expiry} has already settled (TTM=0) — Greeks are "
+                       f"undefined. Use a live expiry, e.g. the one from "
+                       f"/api/expiries.")
     try:
         return _fetch_payload(symbol, type, expiry)
     except HTTPException:

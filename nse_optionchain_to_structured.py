@@ -120,8 +120,10 @@ def interpolate_iv(iv_points, K):
     return vs[-1]
 
 
-def fill_ivs(records, S):
-    """First pass per side: nse -> solved; second pass: interpolate leftovers."""
+def fill_ivs(records, S, fallback=None):
+    """First pass per side: nse -> solved; second pass: interpolate leftovers;
+    final fallback: cross-expiry ATM proxy when a side has no anchors at all."""
+    fallback = fallback or {}
     for side in ("ce", "pe"):
         ordered = [r for r in records if r.get(side)]
         # pass 1: nse / solved
@@ -151,6 +153,9 @@ def fill_ivs(records, S):
             if iv is not None:
                 r[side]["iv"] = round(iv, 4)
                 r[side]["iv_source"] = "interpolated"
+            elif fallback.get(side) is not None:
+                r[side]["iv"] = round(float(fallback[side]), 4)
+                r[side]["iv_source"] = "approx-cross-expiry"
             else:
                 r[side]["iv"] = None
                 r[side]["iv_source"] = "unavailable"
