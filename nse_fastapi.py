@@ -11,7 +11,7 @@ Data is fetched live from NSE's own JSON API (cookie-primed curl), then every
 CE/PE is enriched with IV (nse -> solved-from-LTP -> interpolated) and
 Black-Scholes delta/gamma/vega — the same pipeline as nse_optionchain_to_structured.py.
 
-Run:  python -m uvicorn nse_fastapi:app --host 127.0.0.1 --port 8000
+Run:  python -m uvicorn nse_fastapi:app --host 127.0.0.1 --port 8910
 """
 import json
 import os

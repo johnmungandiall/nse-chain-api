@@ -82,8 +82,8 @@
   <details class="api-docs">
     <summary>API Docs — how to use this server from other applications</summary>
     <p style="font-size:13px;margin:10px 0 6px;">
-      Base URL: <code>http://&lt;host&gt;:8000</code> (local: <code>http://127.0.0.1:8000</code>,
-      LAN: <code>http://192.168.1.33:8000</code>). CORS is open, so browser apps on any origin can call it.
+      Base URL: <code>http://&lt;host&gt;:8910</code> (local: <code>http://127.0.0.1:8910</code>,
+      LAN: <code>http://192.168.1.33:8910</code>). CORS is open, so browser apps on any origin can call it.
     </p>
     <table>
       <tr><th>Endpoint</th><th>Description</th></tr>
@@ -101,15 +101,15 @@
     </table>
     <p style="font-weight:700;margin:14px 0 4px;">Examples</p>
     <p style="margin:4px 0;">cURL:</p>
-    <pre>curl "http://127.0.0.1:8000/api/option-chain?symbol=NIFTY&expiry=17-Nov-2026"</pre>
+    <pre>curl "http://127.0.0.1:8910/api/option-chain?symbol=NIFTY&expiry=17-Nov-2026"</pre>
     <p style="margin:4px 0;">JavaScript (fetch):</p>
-    <pre>const res = await fetch("http://127.0.0.1:8000/api/option-chain?symbol=NIFTY");
+    <pre>const res = await fetch("http://127.0.0.1:8910/api/option-chain?symbol=NIFTY");
 const data = await res.json();
 data.meta            // { symbol, type, expiry, underlying_value, timestamp, strikes }
 data.records[0]     // { strike_price, expiry, dte_days, ttm_years, ce, pe }
 data.records[0].ce  // { ltp, oi, chg_oi, volume, bid, ask, iv, iv_source, delta, gamma, vega }</pre>
     <p style="margin:4px 0;">cURL (expiries):</p>
-    <pre>curl "http://127.0.0.1:8000/api/expiries?symbol=NIFTY"</pre>
+    <pre>curl "http://127.0.0.1:8910/api/expiries?symbol=NIFTY"</pre>
     <p style="font-size:12.5px;color:#607080;margin-top:10px;">
       Each CE/PE object contains <code>iv</code> (NSE / solved-from-LTP / interpolated / approx-cross-expiry,
       flagged by <code>iv_source</code>) plus <code>delta</code>, <code>gamma</code>, <code>vega</code>.

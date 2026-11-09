@@ -43,13 +43,13 @@ Also present: `.git` (repo, branches: `master`, `dev` (current), `1.0.0`), `__py
 
 ```powershell
 cd $env:USERPROFILE\Desktop\nse-chain-api
-python -m uvicorn nse_fastapi:app --host 0.0.0.0 --port 8000
+python -m uvicorn nse_fastapi:app --host 0.0.0.0 --port 8910
 ```
 
-- Dashboard: `http://127.0.0.1:8000/`
-- Playground: `http://127.0.0.1:8000/playground`
-- OpenAPI docs: `http://127.0.0.1:8000/docs`
-- LAN access: `http://<this-machine-ip>:8000` (e.g. `http://192.168.1.33:8000`)
+- Dashboard: `http://127.0.0.1:8910/`
+- Playground: `http://127.0.0.1:8910/playground`
+- OpenAPI docs: `http://127.0.0.1:8910/docs`
+- LAN access: `http://<this-machine-ip>:8910` (e.g. `http://192.168.1.33:8910`)
 
 Python requirements: `fastapi`, `uvicorn[standard]` (installed in user site-packages; no other deps — HTTP calls are done via `curl.exe` subprocess).
 
