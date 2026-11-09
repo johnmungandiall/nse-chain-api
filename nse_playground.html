@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NSE Option Chain — API Playground</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f4f5f9; color: #17202a; }
+  header { background: #10182f; color: #fff; padding: 14px 22px; display: flex; align-items: center; gap: 14px; }
+  header h1 { font-size: 18px; margin: 0; }
+  header a { color: #8ec9ff; font-size: 13px; }
+  .body { padding: 20px 22px; display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; }
+  .panel { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.08); padding: 16px; }
+  .req { flex: 0 0 360px; }
+  .resp { flex: 1 1 520px; min-width: 420px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 13px; margin-bottom: 4px; color: #3d4a5c; }
+  select, input { width: 100%; padding: 7px 9px; border: 1px solid #c4ccd8; border-radius: 6px; font-size: 13px; }
+  button { margin-top: 6px; padding: 8px 16px; background: #1f6feb; color: #fff; border: 0; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  button:hover { background: #185fd0; }
+  .url { font-family: Consolas, monospace; font-size: 12px; background: #eef1f6; padding: 8px; border-radius: 6px; margin-bottom: 12px; word-break: break-all; }
+  .status { font-size: 13px; margin-bottom: 8px; }
+  .status .ok { color: #0b6e4f; font-weight: 700; }
+  .status .bad { color: #c0392b; font-weight: 700; }
+  pre { background: #10182f; color: #d6e4f5; padding: 14px; border-radius: 8px; font-size: 12px; max-height: 65vh; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+  .copy { font-size: 12px; padding: 4px 10px; background: #2a3a5c; color: #fff; }
+</style>
+</head>
+<body>
+<header>
+  <h1>NSE Option Chain — API Playground</h1>
+  <a href="/">← Dashboard</a>
+</header>
+<div class="body">
+  <div class="panel req">
+    <div class="url" id="url">/api/option-chain?symbol=NIFTY&expiry=</div>
+    <div class="field"><label>Endpoint</label>
+      <select id="endpoint">
+        <option value="option-chain">/api/option-chain</option>
+        <option value="expiries">/api/expiries</option>
+      </select>
+    </div>
+    <div class="field"><label>Symbol</label>
+      <input id="symbol" value="NIFTY" list="syms">
+      <datalist id="syms">
+        <option>NIFTY</option><option>BANKNIFTY</option><option>FINNIFTY</option>
+        <option>MIDCPNIFTY</option><option>NIFTYNXT50</option><option>RELIANCE</option>
+        <option>HDFCBANK</option><option>TCS</option><option>SBIN</option>
+      </datalist>
+    </div>
+    <div class="field"><label>Type (Indices / Equities)</label>
+      <select id="type"><option>Indices</option><option>Equities</option></select>
+    </div>
+    <div class="field"><label>Expiry (leave empty = latest)</label>
+      <input id="expiry" placeholder="e.g. 17-Nov-2026">
+    </div>
+    <button id="run">Send request</button>
+  </div>
+  <div class="panel resp">
+    <div class="status" id="status">Ready.</div>
+    <pre id="out">Response will appear here…</pre>
+  </div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+
+function buildUrl() {
+  const ep = $("endpoint").value;
+  let u = "/api/" + ep + "?symbol=" + encodeURIComponent($("symbol").value);
+  if (ep === "option-chain") {
+    u += "&type=" + encodeURIComponent($("type").value);
+    const e = $("expiry").value.trim();
+    if (e) u += "&expiry=" + encodeURIComponent(e);
+  }
+  return u;
+}
+
+function refreshUrl() { $("url").textContent = buildUrl(); }
+
+async function run() {
+  const u = buildUrl();
+  refreshUrl();
+  const t0 = performance.now();
+  $("status").innerHTML = '<span class="ok">Loading…</span>';
+  try {
+    const r = await fetch(u);
+    const ms = Math.round(performance.now() - t0);
+    const j = await r.json();
+    $("status").innerHTML = r.ok
+      ? `<span class="ok">HTTP ${r.status} · ${ms} ms · OK</span>`
+      : `<span class="bad">HTTP ${r.status} · ${ms} ms · error</span>`;
+    $("out").textContent = JSON.stringify(j, null, 2);
+  } catch (e) {
+    $("status").innerHTML = `<span class="bad">Network error: ${e}</span>`;
+    $("out").textContent = String(e);
+  }
+}
+
+["endpoint", "symbol", "type", "expiry"].forEach(id => $(id).addEventListener("input", refreshUrl));
+$("run").addEventListener("click", run);
+refreshUrl();
+</script>
+</body>
+</html>

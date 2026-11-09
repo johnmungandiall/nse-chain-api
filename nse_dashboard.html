@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NSE Option Chain — Dashboard</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f4f5f9; color: #17202a; }
+  header { background: #10182f; color: #fff; padding: 14px 22px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  header h1 { font-size: 18px; margin: 0; }
+  header a { color: #8ec9ff; margin-left: 8px; font-size: 13px; }
+  .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-left: auto; }
+  .controls label { font-size: 13px; opacity: .85; }
+  select, button { padding: 6px 10px; border-radius: 6px; border: 1px solid #c4ccd8; font-size: 13px; background: #fff; }
+  button { background: #1f6feb; color: #fff; border-color: #1f6feb; cursor: pointer; font-weight: 600; }
+  button:hover { background: #185fd0; }
+  .meta { padding: 10px 22px; font-size: 13px; color: #3d4a5c; display: flex; gap: 22px; flex-wrap: wrap; }
+  .meta b { color: #10182f; }
+  .wrap { padding: 0 22px 30px; }
+  table { width: 100%; border-collapse: collapse; background: #fff; font-size: 12.5px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+  th { background: #10182f; color: #fff; padding: 8px 7px; text-align: right; white-space: nowrap; position: sticky; top: 0; }
+  th.stk { text-align: center; }
+  td { padding: 6px 7px; border-top: 1px solid #e8ebf1; text-align: right; font-variant-numeric: tabular-nums; }
+  td.stk { text-align: center; font-weight: 700; }
+  .ce-h { color: #0b6e4f; } .pe-h { color: #a63d40; }
+  tr.atm td.stk { background: #fff3c4; font-size: 13px; }
+  tr.ce-top td.stk { background: #d8f3e6; }
+  tr.pe-top td.stk { background: #fbdcdc; }
+  .hint { font-size: 12px; color: #607080; margin-top: 10px; }
+  .err { color: #c0392b; font-weight: 600; margin-top: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>NSE Option Chain Dashboard</h1>
+  <a href="/playground">Playground →</a>
+  <div class="controls">
+    <label>Symbol
+      <select id="symbol">
+        <option>NIFTY</option><option>BANKNIFTY</option><option>FINNIFTY</option>
+        <option>MIDCPNIFTY</option><option>NIFTYNXT50</option><option>RELIANCE</option>
+        <option>HDFCBANK</option><option>TCS</option><option>SBIN</option>
+      </select>
+    </label>
+    <label>Expiry
+      <select id="expiry"><option value="">(latest)</option></select>
+    </label>
+    <button id="go">Fetch</button>
+  </div>
+</header>
+<div class="meta" id="meta">—</div>
+<div class="wrap">
+  <div id="err" class="err"></div>
+  <table id="t">
+    <thead>
+      <tr>
+        <th class="stk" rowspan="2">Strike</th>
+        <th class="ce-h" colspan="7">CALLS</th>
+        <th class="pe-h" colspan="7">PUTS</th>
+      </tr>
+      <tr>
+        <th class="ce-h">LTP</th><th class="ce-h">OI</th><th class="ce-h">Chg OI</th>
+        <th class="ce-h">Vol</th><th class="ce-h">IV</th><th class="ce-h">Δ</th>
+        <th class="ce-h">Γ/V</th>
+        <th class="pe-h">LTP</th><th class="pe-h">OI</th><th class="pe-h">Chg OI</th>
+        <th class="pe-h">Vol</th><th class="pe-h">IV</th><th class="pe-h">Δ</th>
+        <th class="pe-h">Γ/V</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div class="hint">Highlighting: <b style="color:#0b6e4f">green strike</b> = highest Call OI ·
+    <b style="color:#a63d40">red strike</b> = highest Put OI ·
+    <b style="background:#fff3c4">yellow strike</b> = ATM (nearest to spot). Γ/V = gamma / vega.</div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const fmt = (v, d = 2) => v == null ? "—" : Number(v).toLocaleString("en-IN", { maximumFractionDigits: d });
+const fmtInt = v => v == null ? "—" : Number(v).toLocaleString("en-IN");
+
+async function loadExpiries() {
+  const sym = $("symbol").value;
+  const r = await fetch("/api/expiries?symbol=" + encodeURIComponent(sym));
+  const j = await r.json();
+  const sel = $("expiry");
+  sel.innerHTML = '<option value="">(latest)</option>' +
+    j.expiries.map(e => `<option>${e}</option>`).join("");
+}
+
+function rowClass(rec, spot, maxCe, maxPe) {
+  let cls = "";
+  if (maxCe != null && rec.ce && rec.ce.oi === maxCe) cls += " ce-top";
+  if (maxPe != null && rec.pe && rec.pe.oi === maxPe) cls += " pe-top";
+  if (spot != null && Math.abs(rec.strike_price - spot) < 25) cls += " atm";
+  return cls.trim();
+}
+
+async function load() {
+  const sym = $("symbol").value;
+  const expiry = $("expiry").value;
+  const url = "/api/option-chain?symbol=" + encodeURIComponent(sym) +
+    "&type=" + (sym === "NIFTY" || sym.endsWith("NIFTY") || sym === "BANKNIFTY" || sym === "FINNIFTY" || sym === "MIDCPNIFTY" ? "Indices" : "Equities") +
+    (expiry ? "&expiry=" + encodeURIComponent(expiry) : "");
+  $("err").textContent = "";
+  const r = await fetch(url);
+  const j = await r.json();
+  if (!r.ok) { $("err").textContent = (j.detail || "Fetch failed"); return; }
+  const m = j.meta;
+  $("meta").innerHTML =
+    `<span>Symbol: <b>${m.symbol}</b></span>` +
+    `<span>Type: <b>${m.type}</b></span>` +
+    `<span>Expiry: <b>${m.expiry}</b></span>` +
+    `<span>Spot: <b>${fmt(m.underlying_value)}</b></span>` +
+    `<span>As of: <b>${m.timestamp}</b></span>` +
+    `<span>Strikes: <b>${m.strikes}</b></span>`;
+  const rows = j.records;
+  let maxCe = null, maxPe = null;
+  for (const rec of rows) {
+    if (rec.ce && rec.ce.oi != null && (maxCe == null || rec.ce.oi > maxCe)) maxCe = rec.ce.oi;
+    if (rec.pe && rec.pe.oi != null && (maxPe == null || rec.pe.oi > maxPe)) maxPe = rec.pe.oi;
+  }
+  $("rows").innerHTML = rows.map(rec => {
+    const ce = rec.ce || {}, pe = rec.pe || {};
+    const cls = rowClass(rec, m.underlying_value, maxCe, maxPe);
+    return `<tr class="${cls}">
+      <td class="stk">${fmtInt(rec.strike_price)}</td>
+      <td>${fmt(ce.ltp)}</td><td>${fmtInt(ce.oi)}</td><td>${fmtInt(ce.chg_oi)}</td>
+      <td>${fmtInt(ce.volume)}</td><td>${fmt(ce.iv)}</td><td>${fmt(ce.delta, 3)}</td>
+      <td>${fmt(ce.gamma, 5)}<br><span style="color:#777">${fmt(ce.vega)}</span></td>
+      <td>${fmt(pe.ltp)}</td><td>${fmtInt(pe.oi)}</td><td>${fmtInt(pe.chg_oi)}</td>
+      <td>${fmtInt(pe.volume)}</td><td>${fmt(pe.iv)}</td><td>${fmt(pe.delta, 3)}</td>
+      <td>${fmt(pe.gamma, 5)}<br><span style="color:#777">${fmt(pe.vega)}</span></td>
+    </tr>`;
+  }).join("");
+}
+
+$("symbol").addEventListener("change", loadExpiries);
+$("go").addEventListener("click", load);
+loadExpiries().then(load);
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NIFTY Option Chain — Best Instruments (17-Nov-2026)</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; margin: 24px; background: #fafafa; color: #1a1a2e; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #555; font-size: 13px; margin-bottom: 16px; }
+  .legend { font-size: 13px; margin-bottom: 20px; }
+  .legend span { display: inline-block; padding: 2px 10px; border-radius: 4px; margin-right: 12px; }
+  .c1 { background: #ffe2a8; } .c2 { background: #b3e5fc; } .c3 { background: #ffd6d6; }
+  table { border-collapse: collapse; width: 100%; max-width: 860px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  th { background: #1a1a2e; color: #fff; font-size: 12px; text-align: left; padding: 7px 10px; }
+  td { border-top: 1px solid #e8e8ee; padding: 6px 10px; font-size: 13px; }
+  tr.top-oi { background: #fff3de; }
+  tr.top-vol { background: #e8f5fd; }
+  tr.top-both { background: #ffe6e6; }
+  .rank { font-weight: 700; color: #888; width: 34px; }
+  .strike { font-weight: 700; }
+  .num { font-variant-numeric: tabular-nums; }
+  .note { font-size: 12px; color: #666; margin-top: 14px; max-width: 860px; }
+</style>
+</head>
+<body>
+  <h1>NIFTY Option Chain — Best Instruments (Most Liquid / Active)</h1>
+  <div class="sub">Underlying: NIFTY @ 25,003.65 · Expiry: 17-Nov-2026 · Snapshot: 09-Nov-2026 15:16 IST</div>
+  <div class="legend">
+    <span class="c1">Top Call OI</span>
+    <span class="c2">Top Put OI</span>
+    <span class="c3">Top Volume</span>
+  </div>
+
+  <h2 style="font-size:15px;margin:20px 0 8px;">Overall most active strikes</h2>
+  <table>
+    <tr><th>#</th><th>Strike</th><th class="num">Call OI</th><th class="num">Call Vol</th><th class="num">Put OI</th><th class="num">Put Vol</th><th>Why</th></tr>
+    <tr class="top-both"><td class="rank">1</td><td class="strike">25,000</td><td class="num">85,899</td><td class="num">6,10,254</td><td class="num">73,553</td><td class="num">4,04,621</td><td>Max OI both sides + max volume — pivot</td></tr>
+    <tr class="top-both"><td class="rank">2</td><td class="strike">24,900</td><td class="num">29,299</td><td class="num">3,25,839</td><td class="num">38,640</td><td class="num">3,35,185</td><td>Max call vol, huge put vol</td></tr>
+    <tr class="top-both"><td class="rank">3</td><td class="strike">25,500</td><td class="num">82,439</td><td class="num">3,53,405</td><td class="num">10,096</td><td class="num">12,433</td><td>2nd max call OI + 2nd call vol — resistance</td></tr>
+    <tr class="top-both"><td class="rank">4</td><td class="strike">26,000</td><td class="num">1,01,816</td><td class="num">2,80,136</td><td class="num">1,161</td><td class="num">1,374</td><td>Max call OI — hard resistance wall</td></tr>
+    <tr class="top-both"><td class="rank">5</td><td class="strike">24,500</td><td class="num">19,186</td><td class="num">26,341</td><td class="num">64,568</td><td class="num">3,46,536</td><td>Max put vol — support zone</td></tr>
+    <tr class="top-both"><td class="rank">6</td><td class="strike">24,300</td><td class="num">9,544</td><td class="num">3,940</td><td class="num">74,056</td><td class="num">2,34,475</td><td>High put OI + vol — support</td></tr>
+    <tr class="top-both"><td class="rank">7</td><td class="strike">24,800</td><td class="num">20,666</td><td class="num">1,06,349</td><td class="num">38,306</td><td class="num">2,29,757</td><td>High put vol, strong call vol</td></tr>
+    <tr class="top-both"><td class="rank">8</td><td class="strike">24,000</td><td class="num">18,835</td><td class="num">7,380</td><td class="num">77,432</td><td class="num">2,78,165</td><td>Max put OI — major support</td></tr>
+    <tr class="top-both"><td class="rank">9</td><td class="strike">26,500</td><td class="num">71,186</td><td class="num">2,46,182</td><td class="num">10</td><td class="num">13</td><td>High call OI + vol</td></tr>
+    <tr class="top-both"><td class="rank">10</td><td class="strike">27,000</td><td class="num">47,018</td><td class="num">1,99,219</td><td class="num">–</td><td class="num">–</td><td>High call OI + vol</td></tr>
+  </table>
+
+  <h2 style="font-size:15px;margin:22px 0 8px;">Top 10 by Call Open Interest</h2>
+  <table>
+    <tr><th>#</th><th>Strike</th><th class="num">Call OI</th><th class="num">Chg OI</th><th class="num">Volume</th><th class="num">IV %</th><th class="num">LTP</th></tr>
+    <tr class="top-oi"><td class="rank">1</td><td class="strike">26,000</td><td class="num">1,01,816</td><td class="num">+36,069</td><td class="num">2,80,136</td><td class="num">18.20</td><td class="num">24.75</td></tr>
+    <tr class="top-oi"><td class="rank">2</td><td class="strike">25,000</td><td class="num">85,899</td><td class="num">+39,102</td><td class="num">6,10,254</td><td class="num">15.98</td><td class="num">254.70</td></tr>
+    <tr class="top-oi"><td class="rank">3</td><td class="strike">25,500</td><td class="num">82,439</td><td class="num">+30,780</td><td class="num">3,53,405</td><td class="num">17.08</td><td class="num">86.80</td></tr>
+    <tr class="top-oi"><td class="rank">4</td><td class="strike">26,500</td><td class="num">71,186</td><td class="num">+40,719</td><td class="num">2,46,182</td><td class="num">19.88</td><td class="num">7.70</td></tr>
+    <tr class="top-oi"><td class="rank">5</td><td class="strike">27,000</td><td class="num">47,018</td><td class="num">+33,472</td><td class="num">1,99,219</td><td class="num">21.53</td><td class="num">2.60</td></tr>
+    <tr class="top-oi"><td class="rank">6</td><td class="strike">25,700</td><td class="num">33,512</td><td class="num">-5,976</td><td class="num">1,56,763</td><td class="num">17.42</td><td class="num">52.75</td></tr>
+    <tr class="top-oi"><td class="rank">7</td><td class="strike">25,200</td><td class="num">31,740</td><td class="num">+11,397</td><td class="num">2,12,369</td><td class="num">16.43</td><td class="num">170.00</td></tr>
+    <tr class="top-oi"><td class="rank">8</td><td class="strike">25,400</td><td class="num">31,406</td><td class="num">+4,123</td><td class="num">1,74,638</td><td class="num">16.78</td><td class="num">108.50</td></tr>
+    <tr class="top-oi"><td class="rank">9</td><td class="strike">25,800</td><td class="num">30,648</td><td class="num">+19,759</td><td class="num">1,35,762</td><td class="num">17.64</td><td class="num">40.80</td></tr>
+    <tr class="top-oi"><td class="rank">10</td><td class="strike">24,900</td><td class="num">29,299</td><td class="num">+17,348</td><td class="num">3,25,839</td><td class="num">15.73</td><td class="num">307.25</td></tr>
+  </table>
+
+  <h2 style="font-size:15px;margin:22px 0 8px;">Top 10 by Put Open Interest</h2>
+  <table>
+    <tr><th>#</th><th>Strike</th><th class="num">Put OI</th><th class="num">Chg OI</th><th class="num">Volume</th><th class="num">IV %</th><th class="num">LTP</th></tr>
+    <tr class="top-vol"><td class="rank">1</td><td class="strike">24,000</td><td class="num">77,432</td><td class="num">+34,490</td><td class="num">2,78,165</td><td class="num">19.02</td><td class="num">20.00</td></tr>
+    <tr class="top-vol"><td class="rank">2</td><td class="strike">23,000</td><td class="num">76,918</td><td class="num">+16,860</td><td class="num">2,06,523</td><td class="num">26.41</td><td class="num">4.85</td></tr>
+    <tr class="top-vol"><td class="rank">3</td><td class="strike">24,300</td><td class="num">74,056</td><td class="num">+54,309</td><td class="num">2,34,475</td><td class="num">17.80</td><td class="num">41.30</td></tr>
+    <tr class="top-vol"><td class="rank">4</td><td class="strike">25,000</td><td class="num">73,553</td><td class="num">+46,664</td><td class="num">4,04,621</td><td class="num">17.54</td><td class="num">240.95</td></tr>
+    <tr class="top-vol"><td class="rank">5</td><td class="strike">24,500</td><td class="num">64,568</td><td class="num">+17,863</td><td class="num">3,46,536</td><td class="num">17.36</td><td class="num">71.00</td></tr>
+    <tr class="top-vol"><td class="rank">6</td><td class="strike">24,400</td><td class="num">60,155</td><td class="num">+25,151</td><td class="num">1,94,885</td><td class="num">17.55</td><td class="num">54.25</td></tr>
+    <tr class="top-vol"><td class="rank">7</td><td class="strike">24,200</td><td class="num">47,650</td><td class="num">+29,409</td><td class="num">1,54,582</td><td class="num">18.13</td><td class="num">32.15</td></tr>
+    <tr class="top-vol"><td class="rank">8</td><td class="strike">23,500</td><td class="num">44,206</td><td class="num">+19,708</td><td class="num">1,35,888</td><td class="num">22.21</td><td class="num">8.00</td></tr>
+    <tr class="top-vol"><td class="rank">9</td><td class="strike">24,900</td><td class="num">38,640</td><td class="num">+29,320</td><td class="num">3,35,185</td><td class="num">17.39</td><td class="num">193.70</td></tr>
+    <tr class="top-vol"><td class="rank">10</td><td class="strike">24,800</td><td class="num">38,306</td><td class="num">+19,602</td><td class="num">2,29,757</td><td class="num">17.28</td><td class="num">153.20</td></tr>
+  </table>
+
+  <h2 style="font-size:15px;margin:22px 0 8px;">Key levels (from OI walls)</h2>
+  <table>
+    <tr><th>Level</th><th>Strikes</th><th>Meaning</th></tr>
+    <tr><td class="strike">Resistance</td><td>26,000 / 25,500 / 25,000</td><td>Max call OI — selling pressure zone</td></tr>
+    <tr><td class="strike">Support</td><td>25,000 / 24,300 / 24,000 / 23,000</td><td>Max put OI — buying pressure zone</td></tr>
+    <tr><td class="strike">Pivot / max activity</td><td>25,000</td><td>Highest combined OI + volume both sides</td></tr>
+  </table>
+
+  <div class="note">Data source: NSE India option chain (NIFTY, expiry 17-Nov-2026), captured 09-Nov-2026 15:16 IST. "Best" = most liquid/active: highest open interest and traded volume. Intraday snapshot — not advice.</div>
+</body>
+</html>
