@@ -16,8 +16,8 @@ import sys
 import tempfile
 from datetime import datetime, timezone, timedelta
 
-HOME = os.path.expanduser("~")
-SYS_DIR = os.path.join(HOME, "Desktop")
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+SYS_DIR = PROJECT_DIR
 sys.path.insert(0, SYS_DIR)
 
 from nse_optionchain_to_structured import (  # noqa: E402
@@ -30,7 +30,7 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36")
 CURL = "curl.exe"
 JAR = os.path.join(tempfile.gettempdir(), "nse_fullfetch_cookies.txt")
-OUT = os.path.join(HOME, "Desktop", "nifty_optionchain_full_structured.json")
+OUT = os.path.join(PROJECT_DIR, "nifty_optionchain_full_structured.json")
 
 
 def curl(args, timeout=60):

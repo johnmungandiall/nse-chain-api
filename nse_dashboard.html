@@ -28,6 +28,12 @@
   tr.pe-top td.stk { background: #fbdcdc; }
   .hint { font-size: 12px; color: #607080; margin-top: 10px; }
   .err { color: #c0392b; font-weight: 600; margin-top: 8px; }
+  details.api-docs { margin-top: 26px; background: #fff; border: 1px solid #d8dee9; border-radius: 8px; padding: 14px 18px; }
+  details.api-docs summary { cursor: pointer; font-weight: 700; font-size: 14px; color: #10182f; }
+  .api-docs code { background: #eef1f6; padding: 1px 5px; border-radius: 4px; font-family: Consolas, monospace; font-size: 12.5px; }
+  .api-docs table { margin-top: 10px; font-size: 12.5px; }
+  .api-docs td, .api-docs th { padding: 6px 10px; text-align: left; }
+  .api-docs pre { background: #10182f; color: #d6e4f5; padding: 10px 12px; border-radius: 6px; font-size: 12px; overflow-x: auto; }
 </style>
 </head>
 <body>
@@ -72,6 +78,44 @@
   <div class="hint">Highlighting: <b style="color:#0b6e4f">green strike</b> = highest Call OI ·
     <b style="color:#a63d40">red strike</b> = highest Put OI ·
     <b style="background:#fff3c4">yellow strike</b> = ATM (nearest to spot). Γ/V = gamma / vega.</div>
+
+  <details class="api-docs">
+    <summary>API Docs — how to use this server from other applications</summary>
+    <p style="font-size:13px;margin:10px 0 6px;">
+      Base URL: <code>http://&lt;host&gt;:8000</code> (local: <code>http://127.0.0.1:8000</code>,
+      LAN: <code>http://192.168.1.33:8000</code>). CORS is open, so browser apps on any origin can call it.
+    </p>
+    <table>
+      <tr><th>Endpoint</th><th>Description</th></tr>
+      <tr><td><code>GET /api/option-chain</code></td><td>Option chain w/ IV + delta/gamma/vega per option</td></tr>
+      <tr><td><code>GET /api/expiries</code></td><td>Live expiry dates for a symbol (settled expiries skipped)</td></tr>
+      <tr><td><code>GET /</code></td><td>Dashboard (this page)</td></tr>
+      <tr><td><code>GET /playground</code></td><td>Interactive API playground</td></tr>
+      <tr><td><code>GET /docs</code></td><td>FastAPI auto-generated OpenAPI docs</td></tr>
+    </table>
+    <table>
+      <tr><th>Query param</th><th>Values</th><th>Default</th></tr>
+      <tr><td><code>symbol</code></td><td>NIFTY, BANKNIFTY, FINNIFTY, MIDCPNIFTY, NIFTYNXT50, or equity symbol (RELIANCE, …)</td><td>NIFTY</td></tr>
+      <tr><td><code>type</code></td><td><code>Indices</code> | <code>Equities</code></td><td>Indices</td></tr>
+      <tr><td><code>expiry</code></td><td>e.g. <code>17-Nov-2026</code>; omit for latest live expiry</td><td>latest live</td></tr>
+    </table>
+    <p style="font-weight:700;margin:14px 0 4px;">Examples</p>
+    <p style="margin:4px 0;">cURL:</p>
+    <pre>curl "http://127.0.0.1:8000/api/option-chain?symbol=NIFTY&expiry=17-Nov-2026"</pre>
+    <p style="margin:4px 0;">JavaScript (fetch):</p>
+    <pre>const res = await fetch("http://127.0.0.1:8000/api/option-chain?symbol=NIFTY");
+const data = await res.json();
+data.meta            // { symbol, type, expiry, underlying_value, timestamp, strikes }
+data.records[0]     // { strike_price, expiry, dte_days, ttm_years, ce, pe }
+data.records[0].ce  // { ltp, oi, chg_oi, volume, bid, ask, iv, iv_source, delta, gamma, vega }</pre>
+    <p style="margin:4px 0;">cURL (expiries):</p>
+    <pre>curl "http://127.0.0.1:8000/api/expiries?symbol=NIFTY"</pre>
+    <p style="font-size:12.5px;color:#607080;margin-top:10px;">
+      Each CE/PE object contains <code>iv</code> (NSE / solved-from-LTP / interpolated / approx-cross-expiry,
+      flagged by <code>iv_source</code>) plus <code>delta</code>, <code>gamma</code>, <code>vega</code>.
+      Requesting a settled (expired) expiry returns HTTP 422 with an explanation.
+    </p>
+  </details>
 </div>
 <script>
 const $ = id => document.getElementById(id);

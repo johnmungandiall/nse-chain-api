@@ -18,9 +18,9 @@ import os
 import sys
 from datetime import datetime, timezone, timedelta
 
-HOME = os.path.expanduser("~")
-RAW = os.path.join(HOME, "Desktop", "nifty_optionchain_sample.json")
-OUT = os.path.join(HOME, "Desktop", "nifty_optionchain_structured.json")
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+RAW = os.path.join(PROJECT_DIR, "nifty_optionchain_sample.json")
+OUT = os.path.join(PROJECT_DIR, "nifty_optionchain_structured.json")
 
 RISK_FREE = 0.065   # 6.5% p.a.
 DIV_YIELD = 0.0

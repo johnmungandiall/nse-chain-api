@@ -23,11 +23,11 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
-HOME = Path.home()
-DESKTOP = HOME / "Desktop"
-sys.path.insert(0, str(DESKTOP))
+PROJECT_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(PROJECT_DIR))
 
 from nse_optionchain_to_structured import (  # noqa: E402
     fill_ivs, bs_greeks, parse_ist,
@@ -42,6 +42,15 @@ JAR = os.path.join(tempfile.gettempdir(), "nse_fastapi_cookies.txt")
 CACHE_TTL = 20.0
 
 app = FastAPI(title="NSE Option Chain API", version="1.0.0")
+
+# Allow other applications (web apps, scripts, LAN clients) to call this API.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 _cache = {}
 
@@ -209,9 +218,9 @@ def api_option_chain(symbol: str = "NIFTY", type: str = "Indices",
 
 @app.get("/", response_class=HTMLResponse)
 def dashboard():
-    return (DESKTOP / "nse_dashboard.html").read_text(encoding="utf-8")
+    return (PROJECT_DIR / "nse_dashboard.html").read_text(encoding="utf-8")
 
 
 @app.get("/playground", response_class=HTMLResponse)
 def playground():
-    return (DESKTOP / "nse_playground.html").read_text(encoding="utf-8")
+    return (PROJECT_DIR / "nse_playground.html").read_text(encoding="utf-8")
