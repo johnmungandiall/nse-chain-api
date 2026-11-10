@@ -3,7 +3,9 @@
 Copy-paste ready. Group by task; keep each line runnable.
 
 ## Run / build / test
-- `command` — what it does
+- `python -m uvicorn nse_fastapi:app --host 0.0.0.0 --port 8910` — run the API server (dashboard at /, playground at /playground)
+- `"C:\Users\John\AppData\Local\Programs\Inno Setup 6\ISCC.exe" setup_install.iss` — build the Windows installer (NSSM service setup)
+- `tools\nssm.exe` — bundled NSSM 2.24 (win64) used by install_service.bat / uninstall_service.bat
 
 ## Common tasks
 - (task) -> `command`
