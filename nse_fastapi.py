@@ -105,11 +105,11 @@ def _fetch_payload(symbol, typ, expiry):
         dates = info.get("expiryDates") or []
         if not dates:
             raise HTTPException(status_code=502, detail="No expiries returned by NSE")
-        now = datetime.now(timezone(timedelta(hours=5, minutes=30)))
+        ist_now = datetime.now(timezone(timedelta(hours=5, minutes=30)))
         live = [d for d in dates
-                if (parse_ist(d) or now).replace(hour=EXPIRY_SETTLE_HOUR,
-                                                 minute=EXPIRY_SETTLE_MINUTE,
-                                                 second=0, microsecond=0) > now]
+                if (parse_ist(d) or ist_now).replace(hour=EXPIRY_SETTLE_HOUR,
+                                                     minute=EXPIRY_SETTLE_MINUTE,
+                                                     second=0, microsecond=0) > ist_now]
         expiry = (live or dates)[0]
 
     data = _http_json(f"{BASE}/api/option-chain-v3?type={typ}&symbol={symbol}&expiry={expiry}")
@@ -172,7 +172,7 @@ def _fetch_payload(symbol, typ, expiry):
         },
         "records": out_records,
     }
-    _cache[key] = (now, payload)
+    _cache[key] = (time.time(), payload)
     return payload
 
 
